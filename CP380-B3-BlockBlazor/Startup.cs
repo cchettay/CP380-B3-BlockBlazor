@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CP380_B1_BlockList.Models;
 
 namespace CP380_B3_BlockBlazor
 {
@@ -27,9 +28,18 @@ namespace CP380_B3_BlockBlazor
         {
             //
             // TODO: ADD THE HTTPCLIENT SERVICE
+            services.AddHttpClient();
+            services.AddHttpClient("CP380-B3-BlockBlazor", c =>
+            {
+                c.BaseAddress = new Uri("/");
+                c.DefaultRequestHeaders.Add("User-Agent", "HttpClientFactory-Sample");
+            });
             //
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddSingleton<BlockList>();
+            services.AddSingleton<BlockService>();
+            services.AddSingleton<PendingTransactionService>();
             //
             // TODO: ADD SINGLETONS FOR:
             //       - pending transactions service

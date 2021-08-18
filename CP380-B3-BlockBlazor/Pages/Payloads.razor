@@ -1,42 +1,64 @@
-﻿@page "/payloads"
-
+﻿@page "/pending"
+@using CP380_B1_BlockList.Models
+@using CP380_B3_BlockBlazor.Data
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Threading.Tasks
+@inject HttpClient Http
+@inject PendingTransactionService _services
 <!-- TODO: Add using and inject statements -->
 
-<h3>Pending Transactions</h3>
+<h3>Blocks</h3>
 
-@if (payloads == null)
+@if (paylist == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <!-- TODO: Render a table with all of the pending transactions 
-               This table should include all of the fields for each pending transaction
-      -->
+    int a = 1;
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Position</th>
+                <th>Name</th>
+                <th>Amount</th>
+                <th>Transaction</th>
+                <th>Item</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var abc in paylist)
+            {
+
+                <tr>
+                    <td>@a</td>
+                    <td>@abc.user</td>
+                    <td> @abc.amount</td>
+                    <td>@abc.transactionType</td>
+                    <td>@abc.item</td>
+                </tr>
+
+                a++;
+            }
+        </tbody>
+        <!-- TODO: Add cards for each block in the block list
+
+                 Each card should show:
+                      - the position in the chain (starting at 0)
+                      - the hash
+                      - the nonce
+                      - the previous hash
+        -->
+    </table>
+
 }
 
-<p></p>
-
-<p>@submitResponse</p>
-
-
-<!-- TODO: Add EditForm to submit a new transaction to the server -->
-
-
 @code {
-    private IEnumerable<Payload> payloads;
-    private Payload Payload = new Payload("", 0, 0, "");
-    private string submitResponse = "";
-
+    IEnumerable<CP380_B1_BlockList.Models.Payload> paylist;
     protected override async Task OnInitializedAsync()
     {
-        // TODO: Fetch all the payloads from the service
-    }
-
-    private async Task HandleValidSubmit()
-    {
-        // TODO: submit the new payload to the web API using the PendingTransactionService
-        //       - if succcessful, the payloads should be re-loaded
-        //       - if there is an error, then the submitResponse variable should be updated with the error
+        paylist = await _services.GetPending();
     }
 }

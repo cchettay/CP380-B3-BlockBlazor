@@ -1,5 +1,7 @@
 ﻿@page "/blocks"
-
+@using CP380_B1_BlockList.Models
+@using CP380_B3_BlockBlazor.Data
+@inject BlockService _services
 <!-- TODO: Add using and inject statements -->
 
 <h3>Blocks</h3>
@@ -9,26 +11,49 @@
     <p><em>Loading...</em></p>
 }
 else
-{
-    <div class="card-columns">
+{ int a = 1;
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Position</th>
+                <th>Hash</th>
+                <th>Nonce</th>
+                <th>Previous hash</th>
+            </tr>
+        </thead>
+        <tbody>
 
+            @foreach (var abc in blocklist)
+            {
+
+                <tr>
+                    <td>@a</td>
+                    <td> @abc.hash</td>
+                    <td> @abc.nonce</td>
+                    <td> @abc.previousHash</td>
+                </tr>
+
+
+                a++;
+            }
+        </tbody>
         <!-- TODO: Add cards for each block in the block list
 
-                   Each card should show:
-                        - the position in the chain (starting at 0)
-                        - the hash
-                        - the nonce
-                        - the previous hash
-          -->
+                 Each card should show:
+                      - the position in the chain (starting at 0)
+                      - the hash
+                      - the nonce
+                      - the previous hash
+        -->
+    </table>
 
-    </div>
 }
 
 @code {
-    IEnumerable<Block> blocklist;
+    IEnumerable<CP380_B1_BlockList.Models.Block> blocklist;
 
     protected override async Task OnInitializedAsync()
     {
-        // TODO: fetch blocks from the BlockService
+        blocklist = await _services.GetBlocks();
     }
 }

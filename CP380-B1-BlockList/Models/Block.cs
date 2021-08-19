@@ -1,28 +1,32 @@
-﻿using System;
+﻿sing System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using Microsoft.IdentityModel.Tokens;
+using System.Threading.Tasks;
 
 namespace CP380_B1_BlockList.Models
 {
     public class Block
     {
-        public int Nonce { get; set; }
-        public DateTime TimeStamp { get; set; }
-        public string PreviousHash { get; set; }
-        public string Hash { get; set; }
-        public List<Payload> Data { get; set; }
+        private DateTime now;
 
-        public Block(DateTime timeStamp, string previousHash, List<Payload> data)
+
+        public int nonce { get; set; } = 0;
+        public DateTime timeStamp { get; set; }
+        public string previousHash { get; set; }
+        public string hash { get; set; }
+        public List<Payload> data { get; set; }
+
+        public Block(DateTime timeStamp, string PreviousHash, List<Payload> data)
         {
-            Nonce = 0;
-            TimeStamp = timeStamp;
-            PreviousHash = previousHash;
-            Data = data;
-            Hash = CalculateHash();
+            nonce = 0;
+            timeStamp = timeStamp;
+            previousHash = PreviousHash;
+            data = data;
+            hash = CalculateHash();
         }
+
 
         //
         // JSON serialisation:
@@ -30,32 +34,28 @@ namespace CP380_B1_BlockList.Models
         //
         public string CalculateHash()
         {
-            var sha256 = SHA256.Create();
-            var json = JsonSerializer.Serialize(Data);
+            SHA256 sha256 = SHA256.Create();
+            var json = JsonSerializer.Serialize(data);
 
-            //
-            // TODO
-            //
-            var inputString = $"{TimeStamp.Date:yyyy-MM-dd hh:mm:ss tt}-{PreviousHash}-{Nonce}-{json}"; // TODO
+            var input = Encoding.ASCII.GetBytes($"{timeStamp:yyyy-MM-dd hh:mm:ss tt}-{previousHash}-{nonce}-{data}");
+            var output = sha256.ComputeHash(input);
 
-            var inputBytes = Encoding.ASCII.GetBytes(inputString);
-            var outputBytes = sha256.ComputeHash(inputBytes);
-
-            return Base64UrlEncoder.Encode(outputBytes);
+            return Convert.ToBase64String(output);
         }
 
         public void Mine(int difficulty)
         {
-            // TODO
-            string CValue = new('C', difficulty);
-            while (!Hash.StartsWith(CValue))
+            var cvalues = new string('C', difficulty);
+            while (this.hash == null || this.hash.Substring(0, difficulty) != cvalues)
             {
-
-                Nonce += 1;
-                Hash = CalculateHash();
-
+                this.nonce++;
+                this.hash = this.CalculateHash();
             }
         }
-    }
 
+        public static explicit operator Task(Block v)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

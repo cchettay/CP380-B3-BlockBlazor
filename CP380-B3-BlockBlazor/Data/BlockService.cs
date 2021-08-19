@@ -18,6 +18,7 @@ namespace CP380_B3_BlockBlazor.Data
         static HttpClient httpClient;
         private readonly IConfiguration config;
         private JsonSerializerOptions options;
+        private JsonSerializerOptions jsp = new JsonSerializerOptions(JsonSerializerDefaults.Web);
 
         public BlockService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
@@ -36,6 +37,18 @@ namespace CP380_B3_BlockBlazor.Data
 
             }
             return Array.Empty<Block>();
+        }
+
+        public Task<Block> SubmitNewBlockAsync(Block block)
+        {
+            var a = new StringContent(
+                JsonSerializer.Serialize(block, jsp),
+                System.Text.Encoding.UTF8,
+                "application/json");
+            string requestUri = $"{config.GetValue<HttpResponseMessage>("posting")}/postpending";
+            Console.WriteLine(requestUri);
+            return (Task<Block>)(Task)block;
+
         }
         //
         // TODO: Add a constructor with IConfiguration and IHttpClientFactory arguments
